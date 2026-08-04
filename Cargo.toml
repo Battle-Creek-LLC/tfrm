@@ -27,6 +27,7 @@ dirs = "6"
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
 url = "2"
+toml = "1"
 wiremock = "0.6"
 
 # dev / test

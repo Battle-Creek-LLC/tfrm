@@ -36,11 +36,6 @@ fn workspace_select_is_stubbed() {
 }
 
 #[test]
-fn workspace_current_is_stubbed() {
-    assert_stub(&["workspace", "current"]);
-}
-
-#[test]
 fn runs_list_is_stubbed() {
     assert_stub(&["runs", "list"]);
 }

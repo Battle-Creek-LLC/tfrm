@@ -26,7 +26,15 @@ fn run(cli: Cli) -> Result<(), Error> {
         Command::Workspace(cmd) => match cmd {
             WorkspaceCommand::List => "workspace list",
             WorkspaceCommand::Select { .. } => "workspace select",
-            WorkspaceCommand::Current => "workspace current",
+            WorkspaceCommand::Current => {
+                let cwd = std::env::current_dir().map_err(|e| {
+                    Error::Other(format!("cannot determine working directory: {e}"))
+                })?;
+                let ctx = tfrm_core::config::Context::discover(&cwd)?;
+                let (ws, source) = ctx.resolve_workspace(cli.global.workspace.as_deref())?;
+                println!("{ws} (from {source})");
+                return Ok(());
+            }
         },
         Command::Runs(cmd) => match cmd {
             RunsCommand::List => "runs list",

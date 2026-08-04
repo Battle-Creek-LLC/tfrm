@@ -10,3 +10,9 @@ clear error over guessing).
   1.96.1 is that era's current point release and is what this
   environment has installed, so the pin is reproducible locally and in
   CI without a toolchain downgrade.
+- 2026-08-04 — `.tfrm/local.toml` writes anchor to the directory holding
+  the discovered `.tfrm.toml` (else an existing `.tfrm/`, else the
+  working directory), and discovery of both files walks to ancestors
+  independently. The spec doesn't say where the selection lives when
+  `select` runs in a subdirectory; anchoring to the project config makes
+  one selection per project, matching how git resolves its dotfiles.
