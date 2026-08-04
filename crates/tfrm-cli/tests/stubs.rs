@@ -16,11 +16,6 @@ fn assert_stub(args: &[&str]) {
 }
 
 #[test]
-fn login_is_stubbed() {
-    assert_stub(&["login"]);
-}
-
-#[test]
 fn logout_is_stubbed() {
     assert_stub(&["logout"]);
 }

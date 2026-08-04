@@ -25,9 +25,12 @@ hcl-rs = "0.19"
 idna = "1"
 dirs = "6"
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "io-std", "io-util", "net"] }
 url = "2"
 toml = "1"
+sha2 = "0.10"
+base64 = "0.22"
+rand = "0.8"
 wiremock = "0.6"
 
 # dev / test

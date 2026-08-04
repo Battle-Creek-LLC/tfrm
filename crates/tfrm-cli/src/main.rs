@@ -28,7 +28,7 @@ async fn run(cli: Cli) -> Result<(), Error> {
             println!("token for {host}: {}", cred.source);
             return Ok(());
         }
-        Command::Login { .. } => "login",
+        Command::Login { host } => return commands::login::login(&host).await,
         Command::Logout { .. } => "logout",
         Command::Workspace(cmd) => match cmd {
             WorkspaceCommand::List => return commands::workspace::list(&app).await,

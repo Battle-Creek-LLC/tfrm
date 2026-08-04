@@ -55,6 +55,15 @@ real org.
 push, `runs list`, `runs show`, `runs diff --against latest-applied`,
 `runs apply`, and the change is applied in the UI.
 
+## Phase 4 — standalone auth
+
+- [ ] **J4.1 login (browser)** — on a desktop, `tfrm login` against
+  app.terraform.io opens the browser, completes via the localhost
+  callback, and prints the account name from account/details.
+- [ ] **J4.1 login (SSH/headless)** — over SSH, the printed authorize
+  URL opened elsewhere plus the pasted redirect URL completes the same
+  flow; the account name is printed.
+
 ## Phase 1 — plumbing
 
 - [ ] **J1.1 credential interop** — on a machine where `terraform login`
