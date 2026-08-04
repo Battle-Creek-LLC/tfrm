@@ -60,7 +60,7 @@ push, `runs list`, `runs show`, `runs diff --against latest-applied`,
 - [ ] **J5.1 JSON mid-stream** — `tfrm runs list --format json | jq .`
   works while a plan is streaming in the workspace (stdout stays one
   parseable document; progress goes to stderr).
-- [ ] **J5.3 crates.io dry-run pair** (runnable anywhere with the repo;
+- [x] **J5.3 crates.io dry-run pair** (runnable anywhere with the repo;
   already run in-environment 2026-08-04, both passed):
 
   ```sh
@@ -71,7 +71,9 @@ push, `runs list`, `runs show`, `runs diff --against latest-applied`,
   Expected: tfrm-core compiles and reaches "aborting upload due to dry
   run"; bcl-tfrm reports "Packaged N files". (See DECISIONS.md for why
   bcl-tfrm needs `--exclude-lockfile`.)
-- [ ] **J5.3 publish after the secret lands** — add the
+- [x] **J5.3 publish after the secret lands** (done 2026-08-04: the
+  v0.1.0 tag's release run published tfrm-core and bcl-tfrm 0.1.0 to
+  crates.io) — add the
   `CRATES_IO_TOKEN` repo secret (a crates.io API token with publish
   scope), then re-run the Release workflow against the tag:
 
@@ -85,10 +87,14 @@ push, `runs list`, `runs show`, `runs diff --against latest-applied`,
   installs the prebuilt `tfrm` (requires the crates.io publish above);
   `tfrm --version` prints the released version. `cargo install
   bcl-tfrm --locked` compiles from crates.io.
-- [ ] **v0.1.0 final** — after Phase 2–4 live checks pass: date a
-  `[0.1.0]` CHANGELOG section, bump the workspace version to `0.1.0`,
-  tag `v0.1.0` from green main, and repeat the archive-checksum and
-  binstall checks against the final release.
+- [x] **v0.1.0 final** (done 2026-08-04) — CHANGELOG dated, version
+  bumped, `v0.1.0` tagged from green main; 4 archives + checksums on a
+  non-prerelease "latest" release; linux archive checksum verified
+  in-environment and `./tfrm --version` prints `0.1.0`; both crates on
+  crates.io.
+- [ ] **binstall on a clean machine (final)** — `cargo binstall
+  bcl-tfrm` installs the prebuilt `tfrm` 0.1.0; `cargo install
+  bcl-tfrm --locked` compiles from crates.io.
 
 ## Phase 4 — standalone auth
 
