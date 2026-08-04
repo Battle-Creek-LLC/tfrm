@@ -119,6 +119,52 @@ async fn list_shows_commit_source_and_confirmable_in_one_request() {
     assert!(marked[0].contains("run-new"), "{out}");
 }
 
+/// A VCS run message carries the full multi-line commit body; the table
+/// must render only the subject line, never spilling the body as extra
+/// lines after the row.
+#[tokio::test(flavor = "multi_thread")]
+async fn multi_line_message_renders_subject_only() {
+    let server = MockServer::start().await;
+    mount_workspace(&server).await;
+    let mut run = run_doc("run-dep", "pending", false, "cv-1");
+    run["attributes"]["message"] = serde_json::Value::String(
+        "Bump provider from 2.66.0 to 2.97.0 (#41)\n\nBumps [provider](https://example.com).\n\
+         - [Release notes](https://example.com/releases)\n\n---\nupdated-dependencies:\n\
+         - dependency-name: provider"
+            .into(),
+    );
+    Mock::given(method("GET"))
+        .and(path("/api/v2/workspaces/ws-two/runs"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+            "data": [run],
+            "included": included("cv-1", "ia-1", "aaaa1111bbbb2222"),
+            "meta": {"pagination": {"current-page": 1, "next-page": null, "total-pages": 1}}
+        })))
+        .mount(&server)
+        .await;
+
+    let dir = project(&server.uri());
+    let mut cmd = tfrm_in(dir.path());
+    cmd.args(["runs", "list"]);
+    let assert = run_blocking(cmd).await;
+    let out = String::from_utf8(assert.success().get_output().stdout.clone()).unwrap();
+
+    assert!(
+        out.contains("Bump provider from 2.66.0 to 2.97.0 (#41)"),
+        "{out}"
+    );
+    assert!(!out.contains("updated-dependencies"), "body leaked:\n{out}");
+    assert!(!out.contains("Release notes"), "body leaked:\n{out}");
+    // Every non-empty output line is a header or a run row — nothing
+    // spills outside the table.
+    for line in out.lines().filter(|l| !l.trim().is_empty()) {
+        assert!(
+            line.contains("RUN ID") || line.contains("run-dep"),
+            "stray line outside the table: {line:?}\n{out}"
+        );
+    }
+}
+
 #[tokio::test(flavor = "multi_thread")]
 async fn status_flag_maps_to_filter_status() {
     let server = MockServer::start().await;

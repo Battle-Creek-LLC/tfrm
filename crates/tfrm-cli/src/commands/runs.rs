@@ -61,7 +61,13 @@ pub async fn list(app: &App, limit: usize, status: Option<&str>) -> Result<()> {
                     .map(|sha| sha.chars().take(8).collect())
                     .unwrap_or_default(),
                 run.source.clone().unwrap_or_default(),
-                run.message.clone().unwrap_or_default(),
+                // Subject line only — VCS commit messages carry full
+                // multi-line bodies that would spill out of the table.
+                run.message
+                    .as_deref()
+                    .and_then(|m| m.lines().next())
+                    .unwrap_or_default()
+                    .to_string(),
             ]
         })
         .collect();

@@ -304,7 +304,10 @@ pub fn render_text(report: &ShowReport) -> String {
         out.push_str(&format!("  Commit:    {sha}\n"));
     }
     if let Some(msg) = &run.message {
-        out.push_str(&format!("  Message:   {msg}\n"));
+        // Subject line only — full commit bodies would break the header
+        // layout; --format json keeps the complete message.
+        let subject = msg.lines().next().unwrap_or_default();
+        out.push_str(&format!("  Message:   {subject}\n"));
     }
     out.push('\n');
     out.push_str(&format!(
