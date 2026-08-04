@@ -1,0 +1,38 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/tfrm-core",
+    "crates/tfrm-cli",
+]
+
+[workspace.package]
+version = "0.1.0-rc.1"
+edition = "2021"
+rust-version = "1.96"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Battle-Creek-LLC/tfrm"
+categories = ["command-line-utilities"]
+
+[workspace.dependencies]
+tfrm-core = { path = "crates/tfrm-core", version = "0.1.0-rc.1" }
+
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+clap = { version = "4", features = ["derive"] }
+
+# dev / test
+assert_cmd = "2"
+predicates = "3"
+tempfile = "3"
+pretty_assertions = "1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "debuginfo"
+
+[profile.dev]
+# Keep enough debug info for backtraces without bloating target/ with full symbols.
+debug = "line-tables-only"

@@ -1,0 +1,19 @@
+[package]
+name = "tfrm-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+categories.workspace = true
+description = "Core library for tfrm — HCP Terraform API client, plan model, diff and redaction."
+keywords = ["terraform", "hcp", "cli", "plan", "diff"]
+
+[dependencies]
+thiserror.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true
+tempfile.workspace = true

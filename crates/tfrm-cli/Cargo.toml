@@ -1,0 +1,31 @@
+[package]
+name = "bcl-tfrm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+categories.workspace = true
+description = "tfrm binary — select HCP Terraform workspaces, view and diff plans with sensitive-value redaction, and apply VCS-triggered runs."
+keywords = ["terraform", "hcp", "cli", "plan", "diff"]
+
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/tfrm-{ target }.tar.gz"
+pkg-fmt = "tgz"
+bin-dir = "tfrm{ binary-ext }"
+
+[[bin]]
+name = "tfrm"
+path = "src/main.rs"
+
+[dependencies]
+tfrm-core.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+assert_cmd.workspace = true
+predicates.workspace = true
+tempfile.workspace = true
