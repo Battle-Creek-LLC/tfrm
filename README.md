@@ -18,8 +18,8 @@ Or download a release archive directly (Linux x86_64 shown; also
 
 ```sh
 curl -LO https://github.com/Battle-Creek-LLC/tfrm/releases/latest/download/tfrm-x86_64-unknown-linux-gnu.tar.gz
-curl -LO https://github.com/Battle-Creek-LLC/tfrm/releases/latest/download/tfrm-x86_64-unknown-linux-gnu.tar.gz.sha256
-sha256sum -c tfrm-x86_64-unknown-linux-gnu.tar.gz.sha256
+curl -LO https://github.com/Battle-Creek-LLC/tfrm/releases/latest/download/tfrm-x86_64-unknown-linux-gnu.sha256
+sha256sum -c tfrm-x86_64-unknown-linux-gnu.sha256
 tar xzf tfrm-x86_64-unknown-linux-gnu.tar.gz
 sudo install tfrm /usr/local/bin/
 ```
