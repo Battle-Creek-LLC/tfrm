@@ -368,6 +368,78 @@ pub async fn apply(
     }
 }
 
+fn run_action_flag(run: &Value, flag: &str) -> bool {
+    run.pointer(&format!("/attributes/actions/{flag}"))
+        .and_then(Value::as_bool)
+        .unwrap_or(false)
+}
+
+pub async fn discard(app: &App, run_id: &str, comment: Option<&str>) -> Result<()> {
+    let client = app.client()?;
+    let (meta, run) = runs::get_meta(&client, run_id).await?;
+
+    // R7.6: only runs awaiting confirmation are discardable.
+    if !run_action_flag(&run, "is-discardable") {
+        let hint = if run_action_flag(&run, "is-cancelable") {
+            "; the run is in flight — use `tfrm runs cancel` to stop it"
+        } else {
+            ""
+        };
+        return Err(Error::Refused(format!(
+            "run {run_id} cannot be discarded (status: {}){hint}",
+            meta.status
+        )));
+    }
+
+    tfrm_core::actions::run_action(&client, run_id, "discard", comment).await?;
+    // No prompt (nothing executes), but say what was discarded.
+    println!(
+        "Discarded run {run_id} (status was {}{})",
+        meta.status,
+        meta.message
+            .as_deref()
+            .map(|m| format!(", message: {m}"))
+            .unwrap_or_default()
+    );
+    Ok(())
+}
+
+pub async fn cancel(app: &App, run_id: &str, comment: Option<&str>, force: bool) -> Result<()> {
+    let client = app.client()?;
+    let (meta, run) = runs::get_meta(&client, run_id).await?;
+
+    if force {
+        // R7.7: force-cancel only once the API reports is-force-cancelable
+        // (after the cooldown that follows a plain cancel).
+        if !run_action_flag(&run, "is-force-cancelable") {
+            return Err(Error::Refused(format!(
+                "run {run_id} is not force-cancelable yet (status: {}); run a plain \
+                 `tfrm runs cancel` first and wait for the cooldown",
+                meta.status
+            )));
+        }
+        tfrm_core::actions::run_action(&client, run_id, "force-cancel", comment).await?;
+        println!("Force-canceled run {run_id}");
+        return Ok(());
+    }
+
+    if !run_action_flag(&run, "is-cancelable") {
+        let hint = if run_action_flag(&run, "is-discardable") {
+            "; the run is awaiting confirmation — use `tfrm runs discard` to reject it"
+        } else {
+            ""
+        };
+        return Err(Error::Refused(format!(
+            "run {run_id} cannot be canceled (status: {}){hint}",
+            meta.status
+        )));
+    }
+
+    tfrm_core::actions::run_action(&client, run_id, "cancel", comment).await?;
+    println!("Canceled run {run_id}");
+    Ok(())
+}
+
 /// Poll the run to a terminal status, streaming new apply-log text to
 /// stdout as it appears (R7.4).
 async fn stream_apply_until_terminal(

@@ -169,5 +169,9 @@ pub enum RunsCommand {
         /// Comment recorded in the run timeline
         #[arg(short = 'm', long, value_name = "TEXT")]
         comment: Option<String>,
+
+        /// Force-cancel (allowed only once the API reports is-force-cancelable)
+        #[arg(long)]
+        force: bool,
     },
 }

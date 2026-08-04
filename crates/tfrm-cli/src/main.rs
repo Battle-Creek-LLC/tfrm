@@ -78,8 +78,14 @@ async fn run(cli: Cli) -> Result<(), Error> {
                 )
                 .await
             }
-            RunsCommand::Discard { .. } => "runs discard",
-            RunsCommand::Cancel { .. } => "runs cancel",
+            RunsCommand::Discard { run_id, comment } => {
+                return commands::runs::discard(&app, &run_id, comment.as_deref()).await
+            }
+            RunsCommand::Cancel {
+                run_id,
+                comment,
+                force,
+            } => return commands::runs::cancel(&app, &run_id, comment.as_deref(), force).await,
         },
     };
     Err(Error::Other(format!("{name}: not implemented")))

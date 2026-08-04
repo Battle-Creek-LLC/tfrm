@@ -46,6 +46,14 @@ real org.
   change summary and commit SHA in the prompt, applies after typing the
   workspace name, and the comment appears in the run's UI timeline.
   A second `tfrm runs apply <same-run>` exits 6.
+- [ ] **J3.2 discard/cancel** — `tfrm runs discard <pending-run> -m
+  "tfrm e2e discard"` discards a real pending run and the comment shows
+  in the UI; `tfrm runs cancel <in-flight-run>` stops a real in-flight
+  plan.
+
+**Phase 3 exit criteria** — the full loop on the sandbox workspace:
+push, `runs list`, `runs show`, `runs diff --against latest-applied`,
+`runs apply`, and the change is applied in the UI.
 
 ## Phase 1 — plumbing
 

@@ -26,16 +26,6 @@ fn logout_is_stubbed() {
 }
 
 #[test]
-fn runs_discard_is_stubbed() {
-    assert_stub(&["runs", "discard", "run-abc123"]);
-}
-
-#[test]
-fn runs_cancel_is_stubbed() {
-    assert_stub(&["runs", "cancel", "run-abc123"]);
-}
-
-#[test]
 fn version_prints_and_succeeds() {
     tfrm()
         .arg("--version")
