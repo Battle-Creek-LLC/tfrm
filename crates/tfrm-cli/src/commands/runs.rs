@@ -212,6 +212,196 @@ async fn fetch_plan_strict(client: &tfrm_core::client::Client, run_id: &str) -> 
     }
 }
 
+/// Terminal run statuses for the apply poll (R7.4).
+const TERMINAL_STATUSES: &[&str] = &[
+    "applied",
+    "errored",
+    "discarded",
+    "canceled",
+    "force_canceled",
+    "planned_and_finished",
+];
+
+fn poll_interval() -> std::time::Duration {
+    let ms = std::env::var("TFRM_POLL_INTERVAL_MS")
+        .ok()
+        .and_then(|v| v.parse::<u64>().ok())
+        .unwrap_or(2000);
+    std::time::Duration::from_millis(ms)
+}
+
+fn is_confirmable(run: &Value) -> bool {
+    run.pointer("/attributes/actions/is-confirmable")
+        .and_then(Value::as_bool)
+        .unwrap_or(false)
+}
+
+/// Human-readable blocking reason for a non-confirmable run, when
+/// determinable from its status (R7.1).
+fn blocking_reason(status: &str) -> &'static str {
+    match status {
+        "policy_override" => "a failed soft-mandatory policy check is awaiting a decision",
+        "policy_checking" | "cost_estimating" | "post_plan_running" => {
+            "checks are still running for this run"
+        }
+        "pending" | "fetching" | "queuing" | "plan_queued" | "planning" => {
+            "the plan has not finished yet"
+        }
+        "applied" | "planned_and_finished" => "the run already finished",
+        "errored" => "the run errored",
+        "discarded" => "the run was discarded",
+        "canceled" | "force_canceled" => "the run was canceled",
+        "applying" | "apply_queued" | "confirmed" => "the run is already being applied",
+        _ => "another run may be ahead in the queue, or the run is speculative",
+    }
+}
+
+pub async fn apply(
+    app: &App,
+    run_id: &str,
+    comment: Option<&str>,
+    auto_approve: bool,
+    override_policy: bool,
+) -> Result<()> {
+    let client = app.client()?;
+    let (mut meta, mut run) = runs::get_meta(&client, run_id).await?;
+
+    // R7.2: policy checks come first — a policy-blocked run is never
+    // confirmable until the override lands.
+    let checks = tfrm_core::actions::policy_checks(&client, run_id).await?;
+    if checks.iter().any(|c| c.status == "hard_failed") {
+        return Err(Error::Refused(format!(
+            "run {run_id} is blocked by a failed hard-mandatory policy check; it cannot be \
+             applied or overridden"
+        )));
+    }
+    let soft_failed: Vec<_> = checks
+        .iter()
+        .filter(|c| c.status == "soft_failed")
+        .collect();
+    let mut overriding = false;
+    if !soft_failed.is_empty() {
+        if !override_policy {
+            return Err(Error::Refused(format!(
+                "run {run_id} is blocked by {} failed soft-mandatory policy check(s); pass \
+                 --override-policy to override",
+                soft_failed.len()
+            )));
+        }
+        for check in &soft_failed {
+            if !check.can_override {
+                return Err(Error::Auth(format!(
+                    "policy check {} cannot be overridden with this token (missing the \
+                     can-override permission)",
+                    check.id
+                )));
+            }
+        }
+        for check in &soft_failed {
+            tfrm_core::actions::override_policy(&client, &check.id).await?;
+        }
+        overriding = true;
+        let refreshed = runs::get_meta(&client, run_id).await?;
+        meta = refreshed.0;
+        run = refreshed.1;
+    }
+
+    // R7.1: gate on is-confirmable, not status.
+    if !is_confirmable(&run) {
+        return Err(Error::Refused(format!(
+            "run {run_id} is not confirmable (status: {}): {}",
+            meta.status,
+            blocking_reason(&meta.status)
+        )));
+    }
+
+    // R7.3: the summary shown is fetched at apply time.
+    let workspace = meta
+        .workspace
+        .clone()
+        .or_else(|| app.selected_workspace())
+        .ok_or_else(|| Error::Other(format!("run {run_id}: cannot determine workspace name")))?;
+    let summary = match plan::fetch(&client, run_id).await? {
+        PlanFetch::Full(value) => show::build_report(meta.clone(), &value).summary,
+        PlanFetch::Summary(s) => show::Summary {
+            add: s.additions,
+            change: s.changes,
+            destroy: s.destructions,
+        },
+    };
+    eprintln!(
+        "Run {run_id} on workspace {workspace}\n  Plan: {} to add, {} to change, {} to destroy.",
+        summary.add, summary.change, summary.destroy
+    );
+    if let Some(sha) = &meta.commit_sha {
+        eprintln!("  Commit: {sha}");
+    }
+    if overriding {
+        eprintln!("  NOTE: a failed soft-mandatory policy check is being overridden.");
+    }
+
+    if !auto_approve {
+        eprint!("Type the workspace name \"{workspace}\" to confirm apply: ");
+        let mut line = String::new();
+        std::io::stdin()
+            .read_line(&mut line)
+            .map_err(|e| Error::Other(format!("cannot read confirmation: {e}")))?;
+        if line.trim() != workspace {
+            return Err(Error::Other(
+                "apply aborted: confirmation did not match the workspace name".into(),
+            ));
+        }
+    }
+
+    tfrm_core::actions::run_action(&client, run_id, "apply", comment).await?;
+    eprintln!("Apply accepted; waiting for the run to finish…");
+
+    let final_status = stream_apply_until_terminal(&client, run_id).await?;
+    match final_status.as_str() {
+        "applied" => {
+            println!("Run {run_id} applied.");
+            Ok(())
+        }
+        status => Err(Error::Other(format!(
+            "run {run_id} ended in status {status}"
+        ))),
+    }
+}
+
+/// Poll the run to a terminal status, streaming new apply-log text to
+/// stdout as it appears (R7.4).
+async fn stream_apply_until_terminal(
+    client: &tfrm_core::client::Client,
+    run_id: &str,
+) -> Result<String> {
+    let mut printed = 0usize;
+    loop {
+        if let Ok(doc) = client
+            .get_json(&format!("/api/v2/runs/{run_id}/apply"))
+            .await
+        {
+            if let Some(url) = doc
+                .pointer("/data/attributes/log-read-url")
+                .and_then(Value::as_str)
+            {
+                if let Ok(resp) = reqwest::get(url).await {
+                    if let Ok(text) = resp.text().await {
+                        if text.len() > printed {
+                            print!("{}", &text[printed..]);
+                            printed = text.len();
+                        }
+                    }
+                }
+            }
+        }
+        let (meta, _) = runs::get_meta(client, run_id).await?;
+        if TERMINAL_STATUSES.contains(&meta.status.as_str()) {
+            return Ok(meta.status);
+        }
+        tokio::time::sleep(poll_interval()).await;
+    }
+}
+
 /// Poll the run until it leaves the planning states, printing new plan-log
 /// text as it appears (stderr keeps stdout machine-parseable, R8.2).
 async fn stream_plan_log(client: &tfrm_core::client::Client, run_id: &str) {

@@ -63,7 +63,21 @@ async fn run(cli: Cli) -> Result<(), Error> {
                 )
                 .await
             }
-            RunsCommand::Apply { .. } => "runs apply",
+            RunsCommand::Apply {
+                run_id,
+                comment,
+                auto_approve,
+                override_policy,
+            } => {
+                return commands::runs::apply(
+                    &app,
+                    &run_id,
+                    comment.as_deref(),
+                    auto_approve,
+                    override_policy,
+                )
+                .await
+            }
             RunsCommand::Discard { .. } => "runs discard",
             RunsCommand::Cancel { .. } => "runs cancel",
         },

@@ -39,6 +39,14 @@ and either `terraform login`-produced credentials on disk or
 **Phase 2 exit criteria** — all Phase 2 checks above pass against the
 real org.
 
+## Phase 3 — run actions
+
+- [ ] **J3.1 runs apply** — on a sandbox workspace, push a trivial
+  change; `tfrm runs apply <run> -m "tfrm e2e"` shows the correct
+  change summary and commit SHA in the prompt, applies after typing the
+  workspace name, and the comment appears in the run's UI timeline.
+  A second `tfrm runs apply <same-run>` exits 6.
+
 ## Phase 1 — plumbing
 
 - [ ] **J1.1 credential interop** — on a machine where `terraform login`

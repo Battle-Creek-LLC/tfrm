@@ -141,6 +141,14 @@ pub enum RunsCommand {
         /// Comment recorded in the run timeline
         #[arg(short = 'm', long, value_name = "TEXT")]
         comment: Option<String>,
+
+        /// Skip the type-the-workspace-name confirmation prompt
+        #[arg(long)]
+        auto_approve: bool,
+
+        /// Override a failed soft-mandatory policy check before applying
+        #[arg(long)]
+        override_policy: bool,
     },
 
     /// Reject a run awaiting confirmation

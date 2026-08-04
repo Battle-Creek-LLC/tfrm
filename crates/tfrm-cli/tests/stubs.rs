@@ -26,11 +26,6 @@ fn logout_is_stubbed() {
 }
 
 #[test]
-fn runs_apply_is_stubbed() {
-    assert_stub(&["runs", "apply", "run-abc123"]);
-}
-
-#[test]
 fn runs_discard_is_stubbed() {
     assert_stub(&["runs", "discard", "run-abc123"]);
 }
