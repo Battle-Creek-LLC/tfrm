@@ -2,10 +2,17 @@ mod cli;
 
 use clap::Parser;
 use cli::{Cli, Command, RunsCommand, WorkspaceCommand};
+use tfrm_core::Error;
 
 fn main() {
     let cli = Cli::parse();
+    if let Err(err) = run(cli) {
+        eprintln!("tfrm: {err}");
+        std::process::exit(err.exit_code());
+    }
+}
 
+fn run(cli: Cli) -> Result<(), Error> {
     let name = match &cli.command {
         Command::Login { .. } => "login",
         Command::Logout { .. } => "logout",
@@ -23,7 +30,5 @@ fn main() {
             RunsCommand::Cancel { .. } => "runs cancel",
         },
     };
-
-    eprintln!("tfrm {name}: not implemented");
-    std::process::exit(1);
+    Err(Error::Other(format!("{name}: not implemented")))
 }
