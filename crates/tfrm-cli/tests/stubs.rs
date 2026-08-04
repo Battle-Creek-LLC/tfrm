@@ -7,19 +7,6 @@ fn tfrm() -> Command {
     Command::cargo_bin("tfrm").unwrap()
 }
 
-fn assert_stub(args: &[&str]) {
-    tfrm()
-        .args(args)
-        .assert()
-        .code(1)
-        .stderr(predicate::str::contains("not implemented"));
-}
-
-#[test]
-fn logout_is_stubbed() {
-    assert_stub(&["logout"]);
-}
-
 #[test]
 fn version_prints_and_succeeds() {
     tfrm()

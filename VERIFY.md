@@ -63,6 +63,12 @@ push, `runs list`, `runs show`, `runs diff --against latest-applied`,
 - [ ] **J4.1 login (SSH/headless)** — over SSH, the printed authorize
   URL opened elsewhere plus the pasted redirect URL completes the same
   flow; the account name is printed.
+- [ ] **J4.2 credential interop with terraform** — after `tfrm login`,
+  inspect `~/.terraform.d/credentials.tfrc.json` (or run `terraform
+  login` on another host and diff): the schema matches terraform's own
+  file, and `terraform` (if installed) authenticates with the
+  tfrm-written token. `tfrm logout` then `tfrm workspace list` exits 3
+  with the login hint.
 
 ## Phase 1 — plumbing
 

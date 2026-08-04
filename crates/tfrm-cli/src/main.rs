@@ -20,28 +20,26 @@ async fn main() {
 async fn run(cli: Cli) -> Result<(), Error> {
     let command = cli.command;
     let app = App::new(cli.global)?;
-    let name = match command {
+    match command {
         Command::AuthDebug { host } => {
             let lookup = tfrm_core::credentials::CredentialLookup::from_os();
             let cred = lookup.resolve(&host, app.global.token.as_deref())?;
             // Provenance only — the token itself must never be printed (R2.3).
             println!("token for {host}: {}", cred.source);
-            return Ok(());
+            Ok(())
         }
-        Command::Login { host } => return commands::login::login(&host).await,
-        Command::Logout { .. } => "logout",
+        Command::Login { host } => commands::login::login(&host).await,
+        Command::Logout { host } => commands::login::logout(&host),
         Command::Workspace(cmd) => match cmd {
-            WorkspaceCommand::List => return commands::workspace::list(&app).await,
-            WorkspaceCommand::Select { name } => {
-                return commands::workspace::select(&app, &name).await
-            }
-            WorkspaceCommand::Current => return commands::workspace::current(&app),
+            WorkspaceCommand::List => commands::workspace::list(&app).await,
+            WorkspaceCommand::Select { name } => commands::workspace::select(&app, &name).await,
+            WorkspaceCommand::Current => commands::workspace::current(&app),
         },
         Command::Runs(cmd) => match cmd {
             RunsCommand::List { limit, status } => {
-                return commands::runs::list(&app, limit, status.as_deref()).await
+                commands::runs::list(&app, limit, status.as_deref()).await
             }
-            RunsCommand::Show { run_id } => return commands::runs::show(&app, &run_id).await,
+            RunsCommand::Show { run_id } => commands::runs::show(&app, &run_id).await,
             RunsCommand::Diff {
                 a,
                 b,
@@ -50,7 +48,7 @@ async fn run(cli: Cli) -> Result<(), Error> {
                 exit_code,
                 allow_cross_workspace,
             } => {
-                return commands::runs::diff(
+                commands::runs::diff(
                     &app,
                     commands::runs::DiffArgs {
                         a,
@@ -69,7 +67,7 @@ async fn run(cli: Cli) -> Result<(), Error> {
                 auto_approve,
                 override_policy,
             } => {
-                return commands::runs::apply(
+                commands::runs::apply(
                     &app,
                     &run_id,
                     comment.as_deref(),
@@ -79,14 +77,13 @@ async fn run(cli: Cli) -> Result<(), Error> {
                 .await
             }
             RunsCommand::Discard { run_id, comment } => {
-                return commands::runs::discard(&app, &run_id, comment.as_deref()).await
+                commands::runs::discard(&app, &run_id, comment.as_deref()).await
             }
             RunsCommand::Cancel {
                 run_id,
                 comment,
                 force,
-            } => return commands::runs::cancel(&app, &run_id, comment.as_deref(), force).await,
+            } => commands::runs::cancel(&app, &run_id, comment.as_deref(), force).await,
         },
-    };
-    Err(Error::Other(format!("{name}: not implemented")))
+    }
 }

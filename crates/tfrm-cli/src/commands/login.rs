@@ -44,6 +44,25 @@ pub async fn login(host: &str) -> Result<()> {
     Ok(())
 }
 
+/// `tfrm logout` (R2b.6): remove the host's entry from
+/// credentials.tfrc.json; no-op with a note when absent. `.terraformrc`
+/// credentials blocks are never touched.
+pub fn logout(host: &str) -> Result<()> {
+    let path = credfile::default_path()?;
+    if credfile::remove(&path, host)? {
+        println!(
+            "Logged out of {host} (token removed from {})",
+            path.display()
+        );
+    } else {
+        println!(
+            "No stored token for {host} in {}; nothing to do",
+            path.display()
+        );
+    }
+    Ok(())
+}
+
 async fn bind_callback_listener(config: &OAuthConfig) -> Option<tokio::net::TcpListener> {
     for port in config.min_port..=config.max_port {
         if let Ok(listener) = tokio::net::TcpListener::bind(("127.0.0.1", port)).await {
