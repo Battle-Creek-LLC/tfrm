@@ -26,11 +26,6 @@ fn logout_is_stubbed() {
 }
 
 #[test]
-fn runs_show_is_stubbed() {
-    assert_stub(&["runs", "show", "run-abc123"]);
-}
-
-#[test]
 fn runs_diff_is_stubbed() {
     assert_stub(&["runs", "diff", "run-a", "run-b"]);
 }

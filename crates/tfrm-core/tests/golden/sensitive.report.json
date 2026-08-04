@@ -1,0 +1,41 @@
+{
+  "run": {
+    "id": "run-abc123",
+    "workspace": "platform",
+    "status": "planned",
+    "source": "tfe-api",
+    "commit_sha": "aaaa1111bbbb2222",
+    "message": "test message"
+  },
+  "summary": {
+    "add": 0,
+    "change": 1,
+    "destroy": 0
+  },
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.main",
+      "action": "update",
+      "attributes": [
+        {
+          "name": "instance_class",
+          "before": "db.t3.medium",
+          "after": "db.t3.large"
+        },
+        {
+          "name": "password",
+          "before": "(sensitive)",
+          "after": "(sensitive)"
+        }
+      ]
+    }
+  ],
+  "output_changes": [
+    {
+      "name": "db_password",
+      "action": "update",
+      "before": "(sensitive)",
+      "after": "(sensitive)"
+    }
+  ]
+}

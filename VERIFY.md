@@ -25,6 +25,10 @@ and either `terraform login`-produced credentials on disk or
   write-only team token (if available), the same command prints the
   degraded summary counts plus a warning that attribute-level detail
   needs workspace admin, and exits 0.
+- [ ] **J2.4 runs show** — `tfrm runs show <run>` on a real run matches
+  the UI's resource list (same addresses, same actions); a
+  known-sensitive attribute renders `(sensitive)` and its value appears
+  nowhere in the output, including `--format json`.
 
 ## Phase 1 — plumbing
 

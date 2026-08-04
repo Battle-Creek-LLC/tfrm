@@ -7,6 +7,7 @@ pub mod credentials;
 pub mod error;
 pub mod plan;
 pub mod runs;
+pub mod show;
 pub mod workspaces;
 
 pub use error::{Error, Result};

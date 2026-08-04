@@ -1,0 +1,34 @@
+{
+  "run": {
+    "id": "run-abc123",
+    "workspace": "platform",
+    "status": "planned",
+    "source": "tfe-api",
+    "commit_sha": "aaaa1111bbbb2222",
+    "message": "test message"
+  },
+  "summary": {
+    "add": 0,
+    "change": 0,
+    "destroy": 1
+  },
+  "resource_changes": [
+    {
+      "address": "aws_sqs_queue.retired",
+      "action": "delete",
+      "attributes": [
+        {
+          "name": "delay_seconds",
+          "before": 30,
+          "after": null
+        },
+        {
+          "name": "name",
+          "before": "retired-queue",
+          "after": null
+        }
+      ]
+    }
+  ],
+  "output_changes": []
+}

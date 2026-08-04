@@ -1,0 +1,18 @@
+Run run-abc123
+  Workspace: platform
+  Status:    planned
+  Source:    tfe-api
+  Commit:    aaaa1111bbbb2222
+  Message:   test message
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Resource changes:
+
+  + create aws_eip.nat
+      allocation_id = (known after apply)
+      domain = "vpc"
+      public_ip = (known after apply)
+
+Output changes:
+  + nat_ip = (known after apply)

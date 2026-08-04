@@ -41,7 +41,7 @@ async fn run(cli: Cli) -> Result<(), Error> {
             RunsCommand::List { limit, status } => {
                 return commands::runs::list(&app, limit, status.as_deref()).await
             }
-            RunsCommand::Show { .. } => "runs show",
+            RunsCommand::Show { run_id } => return commands::runs::show(&app, &run_id).await,
             RunsCommand::Diff { .. } => "runs diff",
             RunsCommand::Apply { .. } => "runs apply",
             RunsCommand::Discard { .. } => "runs discard",

@@ -1,0 +1,14 @@
+Run run-abc123
+  Workspace: platform
+  Status:    planned
+  Source:    tfe-api
+  Commit:    aaaa1111bbbb2222
+  Message:   test message
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+Resource changes:
+
+  ~ update aws_instance.web
+      instance_type: "t3.small" -> "t3.large"
+      tags: {"env":"staging"} -> {"env":"production"}

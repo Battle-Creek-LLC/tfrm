@@ -1,0 +1,14 @@
+Run run-abc123
+  Workspace: platform
+  Status:    planned
+  Source:    tfe-api
+  Commit:    aaaa1111bbbb2222
+  Message:   test message
+
+Plan: 1 to add, 0 to change, 1 to destroy.
+
+Resource changes:
+
+  ± replace aws_db_instance.main  (forced by: engine_version)
+      endpoint: null -> (known after apply)
+      engine_version: "14.5" -> "16.1"  # forces replacement

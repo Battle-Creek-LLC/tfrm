@@ -1,0 +1,38 @@
+{
+  "run": {
+    "id": "run-abc123",
+    "workspace": "platform",
+    "status": "planned",
+    "source": "tfe-api",
+    "commit_sha": "aaaa1111bbbb2222",
+    "message": "test message"
+  },
+  "summary": {
+    "add": 1,
+    "change": 0,
+    "destroy": 1
+  },
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.main",
+      "action": "replace",
+      "replace_forced_by": [
+        "engine_version"
+      ],
+      "attributes": [
+        {
+          "name": "endpoint",
+          "before": null,
+          "after": "(known after apply)"
+        },
+        {
+          "name": "engine_version",
+          "before": "14.5",
+          "after": "16.1",
+          "forces_replacement": true
+        }
+      ]
+    }
+  ],
+  "output_changes": []
+}

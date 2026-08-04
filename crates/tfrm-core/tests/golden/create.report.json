@@ -1,0 +1,51 @@
+{
+  "run": {
+    "id": "run-abc123",
+    "workspace": "platform",
+    "status": "planned",
+    "source": "tfe-api",
+    "commit_sha": "aaaa1111bbbb2222",
+    "message": "test message"
+  },
+  "summary": {
+    "add": 1,
+    "change": 0,
+    "destroy": 0
+  },
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.assets",
+      "action": "create",
+      "attributes": [
+        {
+          "name": "arn",
+          "before": null,
+          "after": "(known after apply)"
+        },
+        {
+          "name": "bucket",
+          "before": null,
+          "after": "acme-assets"
+        },
+        {
+          "name": "force_destroy",
+          "before": null,
+          "after": false
+        },
+        {
+          "name": "id",
+          "before": null,
+          "after": "(known after apply)"
+        }
+      ]
+    }
+  ],
+  "output_changes": [
+    {
+      "name": "bucket_name",
+      "action": "create",
+      "before": null,
+      "after": "acme-assets"
+    }
+  ]
+}

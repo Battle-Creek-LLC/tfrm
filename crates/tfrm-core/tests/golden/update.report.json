@@ -1,0 +1,38 @@
+{
+  "run": {
+    "id": "run-abc123",
+    "workspace": "platform",
+    "status": "planned",
+    "source": "tfe-api",
+    "commit_sha": "aaaa1111bbbb2222",
+    "message": "test message"
+  },
+  "summary": {
+    "add": 0,
+    "change": 1,
+    "destroy": 0
+  },
+  "resource_changes": [
+    {
+      "address": "aws_instance.web",
+      "action": "update",
+      "attributes": [
+        {
+          "name": "instance_type",
+          "before": "t3.small",
+          "after": "t3.large"
+        },
+        {
+          "name": "tags",
+          "before": {
+            "env": "staging"
+          },
+          "after": {
+            "env": "production"
+          }
+        }
+      ]
+    }
+  ],
+  "output_changes": []
+}

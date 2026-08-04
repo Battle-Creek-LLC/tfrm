@@ -1,0 +1,19 @@
+Run run-abc123
+  Workspace: platform
+  Status:    planned
+  Source:    tfe-api
+  Commit:    aaaa1111bbbb2222
+  Message:   test message
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Resource changes:
+
+  + create aws_s3_bucket.assets
+      arn = (known after apply)
+      bucket = "acme-assets"
+      force_destroy = false
+      id = (known after apply)
+
+Output changes:
+  + bucket_name = "acme-assets"
