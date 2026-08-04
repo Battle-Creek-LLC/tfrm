@@ -1,0 +1,36 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_eip.nat",
+      "mode": "managed",
+      "type": "aws_eip",
+      "name": "nat",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "domain": "vpc"
+        },
+        "after_unknown": {
+          "public_ip": true,
+          "allocation_id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {}
+      }
+    }
+  ],
+  "output_changes": {
+    "nat_ip": {
+      "actions": ["create"],
+      "before": null,
+      "after": null,
+      "after_unknown": true,
+      "before_sensitive": false,
+      "after_sensitive": false
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_sqs_queue.retired",
+      "mode": "managed",
+      "type": "aws_sqs_queue",
+      "name": "retired",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete"],
+        "before": {
+          "name": "retired-queue",
+          "delay_seconds": 30
+        },
+        "after": null,
+        "after_unknown": {},
+        "before_sensitive": {},
+        "after_sensitive": false
+      }
+    }
+  ],
+  "output_changes": {}
+}

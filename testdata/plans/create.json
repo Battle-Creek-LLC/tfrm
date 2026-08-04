@@ -1,0 +1,34 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.assets",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "assets",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "acme-assets",
+          "force_destroy": false
+        },
+        "after_unknown": {"arn": true, "id": true},
+        "before_sensitive": false,
+        "after_sensitive": {}
+      }
+    }
+  ],
+  "output_changes": {
+    "bucket_name": {
+      "actions": ["create"],
+      "before": null,
+      "after": "acme-assets",
+      "after_unknown": false,
+      "before_sensitive": false,
+      "after_sensitive": false
+    }
+  }
+}

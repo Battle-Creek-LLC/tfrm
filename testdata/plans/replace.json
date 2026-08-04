@@ -1,0 +1,32 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.main",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "action_reason": "replace_because_cannot_update",
+      "change": {
+        "actions": ["delete", "create"],
+        "before": {
+          "engine": "postgres",
+          "engine_version": "14.5",
+          "allocated_storage": 100
+        },
+        "after": {
+          "engine": "postgres",
+          "engine_version": "16.1",
+          "allocated_storage": 100
+        },
+        "after_unknown": {"endpoint": true},
+        "before_sensitive": {},
+        "after_sensitive": {},
+        "replace_paths": [["engine_version"]]
+      }
+    }
+  ],
+  "output_changes": {}
+}

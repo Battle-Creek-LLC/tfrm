@@ -20,6 +20,11 @@ and either `terraform login`-produced credentials on disk or
   shows the runs visible in the UI with matching commit SHAs and a `>`
   marker on any run awaiting confirmation. A PR-triggered (plan-only)
   run visible in the UI does NOT appear in the listing (R4.1a).
+- [ ] **J2.3 plan fetch permissions** — with an admin token,
+  `tfrm runs show <run>` renders full attribute detail. With a
+  write-only team token (if available), the same command prints the
+  degraded summary counts plus a warning that attribute-level detail
+  needs workspace admin, and exits 0.
 
 ## Phase 1 — plumbing
 
