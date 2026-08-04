@@ -14,6 +14,13 @@ fn main() {
 
 fn run(cli: Cli) -> Result<(), Error> {
     let name = match &cli.command {
+        Command::AuthDebug { host } => {
+            let lookup = tfrm_core::credentials::CredentialLookup::from_os();
+            let cred = lookup.resolve(host, cli.global.token.as_deref())?;
+            // Provenance only — the token itself must never be printed (R2.3).
+            println!("token for {host}: {}", cred.source);
+            return Ok(());
+        }
         Command::Login { .. } => "login",
         Command::Logout { .. } => "logout",
         Command::Workspace(cmd) => match cmd {

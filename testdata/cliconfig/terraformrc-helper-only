@@ -1,0 +1,3 @@
+credentials_helper "osenv" {
+  args = []
+}

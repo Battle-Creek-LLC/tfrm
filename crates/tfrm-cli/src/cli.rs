@@ -65,6 +65,13 @@ pub enum Command {
     /// List, inspect, diff, and act on runs
     #[command(subcommand)]
     Runs(RunsCommand),
+
+    /// Report which credential source resolves for HOST (debugging aid)
+    #[command(hide = true, name = "auth-debug")]
+    AuthDebug {
+        #[arg(value_name = "HOST", default_value = "app.terraform.io")]
+        host: String,
+    },
 }
 
 #[derive(Debug, Subcommand)]

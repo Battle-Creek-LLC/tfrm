@@ -13,6 +13,9 @@ keywords = ["terraform", "hcp", "cli", "plan", "diff"]
 thiserror.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+hcl-rs.workspace = true
+idna.workspace = true
+dirs.workspace = true
 
 [dev-dependencies]
 pretty_assertions.workspace = true
