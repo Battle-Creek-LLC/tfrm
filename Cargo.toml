@@ -24,6 +24,10 @@ clap = { version = "4", features = ["derive"] }
 hcl-rs = "0.19"
 idna = "1"
 dirs = "6"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+url = "2"
+wiremock = "0.6"
 
 # dev / test
 assert_cmd = "2"
