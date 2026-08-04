@@ -29,6 +29,15 @@ and either `terraform login`-produced credentials on disk or
   the UI's resource list (same addresses, same actions); a
   known-sensitive attribute renders `(sensitive)` and its value appears
   nowhere in the output, including `--format json`.
+- [ ] **J2.5 runs diff** — `tfrm runs diff <newer> <older>` on two
+  consecutive real runs: an intentional variable change between them
+  appears as an attribute difference, and the workspace's sensitive
+  variable does not appear anywhere (at most `(sensitive — differs)`).
+  `tfrm runs diff <run> --against latest-applied` resolves the newest
+  applied run.
+
+**Phase 2 exit criteria** — all Phase 2 checks above pass against the
+real org.
 
 ## Phase 1 — plumbing
 

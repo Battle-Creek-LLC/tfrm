@@ -1,0 +1,28 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.main",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "instance_class": "db.t3.medium",
+          "password": "SENTINEL-DO-NOT-PRINT-old"
+        },
+        "after": {
+          "instance_class": "db.t3.large",
+          "password": "SENTINEL-DO-NOT-PRINT-rotated"
+        },
+        "after_unknown": {},
+        "before_sensitive": {"password": true},
+        "after_sensitive": {"password": true}
+      }
+    }
+  ],
+  "output_changes": {}
+}

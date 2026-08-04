@@ -129,6 +129,89 @@ pub async fn show(app: &App, run_id: &str) -> Result<()> {
     Ok(())
 }
 
+pub struct DiffArgs {
+    pub a: String,
+    pub b: Option<String>,
+    pub against: Option<String>,
+    pub all: bool,
+    pub exit_code: bool,
+    pub allow_cross_workspace: bool,
+}
+
+pub async fn diff(app: &App, args: DiffArgs) -> Result<()> {
+    let client = app.client()?;
+    let (_, run_a) = runs::get_meta(&client, &args.a).await?;
+    let ws_a = run_a
+        .pointer("/relationships/workspace/data/id")
+        .and_then(Value::as_str)
+        .map(str::to_string);
+
+    let b_id = match (&args.b, &args.against) {
+        (Some(b), None) => b.clone(),
+        (None, Some(_)) => {
+            // --against latest-applied (the only accepted REF): newest
+            // applied run of A's workspace (R6.1).
+            let ws = ws_a.clone().ok_or_else(|| {
+                Error::Other(format!("run {}: response missing workspace", args.a))
+            })?;
+            tfrm_core::diff::latest_applied_run(&client, &ws).await?
+        }
+        (Some(_), Some(_)) => {
+            return Err(Error::Usage(
+                "pass either B or --against latest-applied, not both".into(),
+            ))
+        }
+        (None, None) => {
+            return Err(Error::Usage(
+                "runs diff needs a second run: pass B or --against latest-applied".into(),
+            ))
+        }
+    };
+
+    let (_, run_b) = runs::get_meta(&client, &b_id).await?;
+    let ws_b = run_b
+        .pointer("/relationships/workspace/data/id")
+        .and_then(Value::as_str)
+        .map(str::to_string);
+    if ws_a != ws_b && !args.allow_cross_workspace {
+        return Err(Error::Usage(format!(
+            "runs {} and {b_id} belong to different workspaces; pass --allow-cross-workspace \
+             to diff them anyway",
+            args.a
+        )));
+    }
+
+    let plan_a = fetch_plan_strict(&client, &args.a).await?;
+    let plan_b = fetch_plan_strict(&client, &b_id).await?;
+
+    let report = tfrm_core::diff::diff_plans(&args.a, &b_id, &plan_a, &plan_b, args.all);
+    if app.json_output() {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report)
+                .map_err(|e| Error::Other(format!("cannot serialize diff: {e}")))?
+        );
+    } else {
+        print!("{}", tfrm_core::diff::render_text(&report));
+    }
+
+    if args.exit_code && report.has_differences() {
+        std::process::exit(1);
+    }
+    Ok(())
+}
+
+/// Diff needs full plan JSON on both sides; the R5.6 summary fallback is
+/// not enough (R6.7).
+async fn fetch_plan_strict(client: &tfrm_core::client::Client, run_id: &str) -> Result<Value> {
+    match plan::fetch(client, run_id).await? {
+        PlanFetch::Full(value) => Ok(value),
+        PlanFetch::Summary(_) => Err(Error::Auth(format!(
+            "runs diff requires plan JSON for {run_id}, which needs workspace admin on the token"
+        ))),
+    }
+}
+
 /// Poll the run until it leaves the planning states, printing new plan-log
 /// text as it appears (stderr keeps stdout machine-parseable, R8.2).
 async fn stream_plan_log(client: &tfrm_core::client::Client, run_id: &str) {

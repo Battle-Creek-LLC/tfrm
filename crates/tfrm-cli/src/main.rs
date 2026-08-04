@@ -42,7 +42,27 @@ async fn run(cli: Cli) -> Result<(), Error> {
                 return commands::runs::list(&app, limit, status.as_deref()).await
             }
             RunsCommand::Show { run_id } => return commands::runs::show(&app, &run_id).await,
-            RunsCommand::Diff { .. } => "runs diff",
+            RunsCommand::Diff {
+                a,
+                b,
+                against,
+                all,
+                exit_code,
+                allow_cross_workspace,
+            } => {
+                return commands::runs::diff(
+                    &app,
+                    commands::runs::DiffArgs {
+                        a,
+                        b,
+                        against,
+                        all,
+                        exit_code,
+                        allow_cross_workspace,
+                    },
+                )
+                .await
+            }
             RunsCommand::Apply { .. } => "runs apply",
             RunsCommand::Discard { .. } => "runs discard",
             RunsCommand::Cancel { .. } => "runs cancel",

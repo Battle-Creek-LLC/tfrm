@@ -112,8 +112,25 @@ pub enum RunsCommand {
     Diff {
         #[arg(value_name = "A")]
         a: String,
+        /// Second run; omit with --against latest-applied
         #[arg(value_name = "B")]
         b: Option<String>,
+
+        /// Diff A against a resolved run instead of naming B
+        #[arg(long, value_name = "REF", value_parser = ["latest-applied"])]
+        against: Option<String>,
+
+        /// Also list resources whose changes are identical in both plans
+        #[arg(long)]
+        all: bool,
+
+        /// Exit 1 when differences exist (git-diff convention)
+        #[arg(long)]
+        exit_code: bool,
+
+        /// Allow diffing runs from different workspaces
+        #[arg(long)]
+        allow_cross_workspace: bool,
     },
 
     /// Confirm and apply a run awaiting confirmation
