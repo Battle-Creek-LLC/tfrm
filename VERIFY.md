@@ -60,6 +60,35 @@ push, `runs list`, `runs show`, `runs diff --against latest-applied`,
 - [ ] **J5.1 JSON mid-stream** — `tfrm runs list --format json | jq .`
   works while a plan is streaming in the workspace (stdout stays one
   parseable document; progress goes to stderr).
+- [ ] **J5.3 crates.io dry-run pair** (runnable anywhere with the repo;
+  already run in-environment 2026-08-04, both passed):
+
+  ```sh
+  cargo publish --dry-run -p tfrm-core
+  cargo package -p bcl-tfrm --no-verify --exclude-lockfile
+  ```
+
+  Expected: tfrm-core compiles and reaches "aborting upload due to dry
+  run"; bcl-tfrm reports "Packaged N files". (See DECISIONS.md for why
+  bcl-tfrm needs `--exclude-lockfile`.)
+- [ ] **J5.3 publish after the secret lands** — add the
+  `CRATES_IO_TOKEN` repo secret (a crates.io API token with publish
+  scope), then re-run the Release workflow against the tag:
+
+  ```sh
+  gh workflow run release.yml -f tag=v0.1.0-rc.1
+  ```
+
+  Expected: upload-assets re-uploads the 4 archives idempotently and
+  publish-crates publishes `tfrm-core` then `bcl-tfrm` to crates.io.
+- [ ] **J5.3 binstall on a clean machine** — `cargo binstall bcl-tfrm`
+  installs the prebuilt `tfrm` (requires the crates.io publish above);
+  `tfrm --version` prints the released version. `cargo install
+  bcl-tfrm --locked` compiles from crates.io.
+- [ ] **v0.1.0 final** — after Phase 2–4 live checks pass: date a
+  `[0.1.0]` CHANGELOG section, bump the workspace version to `0.1.0`,
+  tag `v0.1.0` from green main, and repeat the archive-checksum and
+  binstall checks against the final release.
 
 ## Phase 4 — standalone auth
 

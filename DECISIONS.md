@@ -16,3 +16,16 @@ clear error over guessing).
   independently. The spec doesn't say where the selection lives when
   `select` runs in a subdirectory; anchoring to the project config makes
   one selection per project, matching how git resolves its dotfiles.
+- 2026-08-04 — the local packaging gate for `bcl-tfrm` is
+  `cargo package -p bcl-tfrm --no-verify --exclude-lockfile` (the
+  prompt's `--no-verify` alone still resolves `tfrm-core` against the
+  crates.io index while writing the packaged lockfile, and the crate is
+  unpublished, so it fails). `--exclude-lockfile` skips exactly that
+  step; the release workflow's `cargo publish --locked -p tfrm-core -p
+  bcl-tfrm` publishes in dependency order, so the real publish never
+  hits this.
+- 2026-08-04 — release.yml adds a create-release job
+  (taiki-e/create-gh-release-action) ahead of the binary matrix, which
+  secunit does not have: it prevents the four matrix jobs from racing
+  to create the release, and the action auto-detects `-rc.` versions as
+  prereleases, which the plan requires for v0.1.0-rc.1.
