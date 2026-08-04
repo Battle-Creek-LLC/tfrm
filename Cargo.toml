@@ -6,7 +6,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.0-rc.1"
+version = "0.1.0"
 edition = "2021"
 rust-version = "1.96"
 license = "MIT OR Apache-2.0"
@@ -14,7 +14,7 @@ repository = "https://github.com/Battle-Creek-LLC/tfrm"
 categories = ["command-line-utilities"]
 
 [workspace.dependencies]
-tfrm-core = { path = "crates/tfrm-core", version = "0.1.0-rc.1" }
+tfrm-core = { path = "crates/tfrm-core", version = "0.1.0" }
 
 anyhow = "1"
 thiserror = "2"

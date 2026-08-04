@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] — 2026-08-04
+
+Promotes 0.1.0-rc.1. Everything under that release's Added list ships
+here unchanged, plus:
+
+### Fixed
+
+- `runs list` and the `runs show` header now render only the commit
+  subject line. The API returns the full multi-line commit message, and
+  a Dependabot-style body previously spilled out of the table as raw
+  lines after the row. `--format json` still carries the complete
+  message.
+
 ## [0.1.0-rc.1] — 2026-08-04
 
 ### Added
