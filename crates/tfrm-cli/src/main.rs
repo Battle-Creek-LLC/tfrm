@@ -38,7 +38,9 @@ async fn run(cli: Cli) -> Result<(), Error> {
             WorkspaceCommand::Current => return commands::workspace::current(&app),
         },
         Command::Runs(cmd) => match cmd {
-            RunsCommand::List => "runs list",
+            RunsCommand::List { limit, status } => {
+                return commands::runs::list(&app, limit, status.as_deref()).await
+            }
             RunsCommand::Show { .. } => "runs show",
             RunsCommand::Diff { .. } => "runs diff",
             RunsCommand::Apply { .. } => "runs apply",

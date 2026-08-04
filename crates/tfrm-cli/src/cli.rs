@@ -92,7 +92,15 @@ pub enum WorkspaceCommand {
 #[derive(Debug, Subcommand)]
 pub enum RunsCommand {
     /// List recent runs
-    List,
+    List {
+        /// Maximum number of runs to list
+        #[arg(long, value_name = "N", default_value_t = 20)]
+        limit: usize,
+
+        /// Only runs with this status (maps to the API's filter[status])
+        #[arg(long, value_name = "STATUS")]
+        status: Option<String>,
+    },
 
     /// Render one run's plan
     Show {

@@ -16,6 +16,10 @@ and either `terraform login`-produced credentials on disk or
   latest-change-at columns. `tfrm workspace select <real-ws>` then
   `tfrm workspace current` round-trips: current prints the selected name
   with `selection` as the source. Also covers J1.2's first real API call.
+- [ ] **J2.2 runs list** — `tfrm runs list` on a VCS-connected workspace
+  shows the runs visible in the UI with matching commit SHAs and a `>`
+  marker on any run awaiting confirmation. A PR-triggered (plan-only)
+  run visible in the UI does NOT appear in the listing (R4.1a).
 
 ## Phase 1 — plumbing
 
