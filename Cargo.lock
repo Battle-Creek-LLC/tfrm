@@ -122,6 +122,8 @@ dependencies = [
  "serde_json",
  "tempfile",
  "tfrm-core",
+ "tokio",
+ "wiremock",
 ]
 
 [[package]]

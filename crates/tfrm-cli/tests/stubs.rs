@@ -26,16 +26,6 @@ fn logout_is_stubbed() {
 }
 
 #[test]
-fn workspace_list_is_stubbed() {
-    assert_stub(&["workspace", "list"]);
-}
-
-#[test]
-fn workspace_select_is_stubbed() {
-    assert_stub(&["workspace", "select", "my-ws"]);
-}
-
-#[test]
 fn runs_list_is_stubbed() {
     assert_stub(&["runs", "list"]);
 }
