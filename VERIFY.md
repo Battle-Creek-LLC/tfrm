@@ -55,6 +55,12 @@ real org.
 push, `runs list`, `runs show`, `runs diff --against latest-applied`,
 `runs apply`, and the change is applied in the UI.
 
+## Phase 5 — release
+
+- [ ] **J5.1 JSON mid-stream** — `tfrm runs list --format json | jq .`
+  works while a plan is streaming in the workspace (stdout stays one
+  parseable document; progress goes to stderr).
+
 ## Phase 4 — standalone auth
 
 - [ ] **J4.1 login (browser)** — on a desktop, `tfrm login` against

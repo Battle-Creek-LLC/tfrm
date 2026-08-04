@@ -1,4 +1,7 @@
 //! Shared test support: plan fixtures and the redaction sentinel.
+//!
+//! Compiled once per test binary; not every binary uses every helper.
+#![allow(dead_code)]
 
 use std::path::Path;
 

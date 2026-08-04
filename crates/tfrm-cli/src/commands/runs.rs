@@ -356,7 +356,9 @@ pub async fn apply(
     tfrm_core::actions::run_action(&client, run_id, "apply", comment).await?;
     eprintln!("Apply accepted; waiting for the run to finish…");
 
-    let final_status = stream_apply_until_terminal(&client, run_id).await?;
+    // R8.2: under --format json the log stream moves to stderr so stdout
+    // stays machine-parseable.
+    let final_status = stream_apply_until_terminal(&client, run_id, app.json_output()).await?;
     match final_status.as_str() {
         "applied" => {
             println!("Run {run_id} applied.");
@@ -445,6 +447,7 @@ pub async fn cancel(app: &App, run_id: &str, comment: Option<&str>, force: bool)
 async fn stream_apply_until_terminal(
     client: &tfrm_core::client::Client,
     run_id: &str,
+    logs_to_stderr: bool,
 ) -> Result<String> {
     let mut printed = 0usize;
     loop {
@@ -459,7 +462,11 @@ async fn stream_apply_until_terminal(
                 if let Ok(resp) = reqwest::get(url).await {
                     if let Ok(text) = resp.text().await {
                         if text.len() > printed {
-                            print!("{}", &text[printed..]);
+                            if logs_to_stderr {
+                                eprint!("{}", &text[printed..]);
+                            } else {
+                                print!("{}", &text[printed..]);
+                            }
                             printed = text.len();
                         }
                     }
